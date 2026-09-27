@@ -226,16 +226,13 @@
             text-align: center;
         }
         .dify-frame {
-            min-height: 500px;
+            min-height: 300px;
             background: #080c14;
-            border: 1px dashed var(--border-highlight);
+            border: 1px solid var(--border-highlight);
             border-radius: 16px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
             padding: 30px;
             margin-top: 30px;
+            text-align: left;
         }
 
         /* Footer */
@@ -297,7 +294,7 @@
         </div>
     </section>
 
-    <!-- 3. Workflow Section (The Logical Bridge) -->
+    <!-- 3. Workflow Section -->
     <section id="workflow" class="section border-t" style="border-top: 1px solid var(--border); background: rgba(17, 24, 39, 0.3);">
         <div class="badge">SIMPLE PROCESS</div>
         <h2 class="section-title">How Uttor Grade WB Works</h2>
@@ -367,26 +364,31 @@
         </div>
     </section>
 
-    <!-- 5. The Evaluator Cockpit (Dify Embed Zone) -->
-    <section id="evaluator" class="section">
+    <!-- 5. The Evaluator Cockpit (Direct Upload Form Zone) -->
+    <section id="evaluators" class="section">
         <div class="grader-container">
             <h2 class="section-title" style="font-size: 28px;">WBCS Evaluator Cockpit</h2>
-            <p class="subtitle" style="margin-bottom: 20px;">Already bought your credits? Enter your access token inside the widget to begin.</p>
+            <p class="subtitle" style="margin-bottom: 20px;">Enter your payment ID and upload your PDF answer script for instant AI grading.</p>
             
             <div class="dify-frame">
-                <!-- Replace everything inside this dify-frame div with your Dify Script -->
-                <div style="max-width: 400px; text-align: center;">
-                    <div style="font-size: 32px; margin-bottom: 15px;">🤖</div>
-                    <h3 style="font-size: 18px; font-weight: 700; margin-bottom: 10px;">Connect Dify Widget Here</h3>
-                    <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 15px;">
-           
+                <!-- Direct Upload Form -->
+                <form id="evalForm">
+                    <div style="margin-bottom: 20px;">
+                        <label style="display: block; font-weight: 700; margin-bottom: 8px; color: var(--text-main);">Access Token (pay_ ID):</label>
+                        <input type="text" id="payToken" required placeholder="e.g. pay_N123456789" style="width: 100%; padding: 14px; background: #030712; border: 1px solid var(--border-highlight); color: #fff; border-radius: 10px; font-size: 15px; outline: none;">
+                    </div>
+                    
+                    <div style="margin-bottom: 20px;">
+                        <label style="display: block; font-weight: 700; margin-bottom: 8px; color: var(--text-main);">Upload Answer Script (PDF / Image):</label>
+                        <input type="file" id="answerFile" accept=".pdf,image/*" required style="width: 100%; padding: 12px; background: #030712; border: 1px solid var(--border-highlight); color: var(--text-muted); border-radius: 10px; font-size: 14px;">
+                    </div>
+                    
+                    <button type="submit" id="submitBtn" style="background: var(--emerald); color: #000; border: none; padding: 16px; font-size: 16px; font-weight: 800; border-radius: 10px; cursor: pointer; width: 100%; transition: background 0.2s;">Evaluate Answer Now</button>
+                </form>
+
+                <div id="loading" style="display: none; margin-top: 20px; text-align: center; color: var(--emerald); font-weight: 700;">Evaluating your script, please wait (~30 seconds)...</div>
                 
-                </p>
-                    <code style="background: #111827; border: 1px solid #374151; padding: 10px; border-radius: 8px; display: block; font-size: 11px; color: var(--emerald);">
-                        &lt;script src="https://udify.app/embed.js" data-token="YOUR_TOKEN"&gt;&lt;/script&gt;
-                    </code>
-                </div>
-                <!-- End Dify Script Replacement Zone -->
+                <div id="resultBox" style="display: none; margin-top: 20px; padding: 20px; background: #030712; border: 1px solid var(--border-highlight); border-radius: 10px; white-space: pre-wrap; line-height: 1.6; color: #e5e7eb; font-size: 14px;"></div>
             </div>
         </div>
     </section>
@@ -395,39 +397,93 @@
     <footer>
         <p>&copy; 2026 Uttor Grade WB. Built for WBCS Aspirants in West Bengal. All rights reserved.</p>
     </footer>
- <script>
- window.difyChatbotConfig = {
-  token: 'RSr6YuHBkzj67Aq7',
-  baseUrl: 'https://udify.app',
-  inputs: {
-    // You can define the inputs from the Start node here
-    // key is the variable name
-    // e.g.
-    // name: "NAME"
-  },
-  systemVariables: {
-    // user_id: 'YOU CAN DEFINE USER ID HERE',
-    // conversation_id: 'YOU CAN DEFINE CONVERSATION ID HERE, IT MUST BE A VALID UUID',
-  },
-  userVariables: {
-    // avatar_url: 'YOU CAN DEFINE USER AVATAR URL HERE',
-    // name: 'YOU CAN DEFINE USER NAME HERE',
-  },
- }
-</script>
-<script
- src="https://udify.app/embed.min.js"
- id="RSr6YuHBkzj67Aq7"
- defer>
-</script>
-<style>
-  #dify-chatbot-bubble-button {
-    background-color: #1C64F2 !important;
-  }
-  #dify-chatbot-bubble-window {
-    width: 24rem !important;
-    height: 40rem !important;
-  }
-</style>
+
+    <!-- Direct API Connection Script -->
+    <script>
+        // Replace with your Dify Workflow API Key from your Dify dashboard API settings
+       app-cV1SnIIlOTiwUPj9RcaeTJxj
+
+        document.getElementById('evalForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const token = document.getElementById('payToken').value.trim();
+            const fileInput = document.getElementById('answerFile').files[0];
+            const submitBtn = document.getElementById('submitBtn');
+            const loading = document.getElementById('loading');
+            const resultBox = document.getElementById('resultBox');
+            
+            if (!fileInput) {
+                alert('Please select a file to upload.');
+                return;
+            }
+
+            submitBtn.disabled = true;
+            submitBtn.style.opacity = '0.6';
+            loading.style.display = 'block';
+            resultBox.style.display = 'none';
+
+            try {
+                // Step 1: Upload the file to Dify backend
+                const formData = new FormData();
+                formData.append('file', fileInput);
+                formData.append('user', token);
+
+                const uploadRes = await fetch('https://api.dify.ai/v1/files/upload', {
+                    method: 'POST',
+                    headers: { 'Authorization': `Bearer ${DIFY_API_KEY}` },
+                    body: formData
+                });
+                const uploadData = await uploadRes.json();
+                
+                if (!uploadData.id) {
+                    throw new Error('File upload rejected by server. Check your API key.');
+                }
+                const fileId = uploadData.id;
+
+                // Step 2: Trigger the workflow execution with the uploaded file & token
+                const runRes = await fetch('https://api.dify.ai/v1/workflows/run', {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${DIFY_API_KEY}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        inputs: {
+                            access_token: token,
+                            query: "Evaluate this answer script."
+                        },
+                        files: [{
+                            type: "document",
+                            transfer_method: "local_file",
+                            upload_file_id: fileId
+                        }],
+                        response_mode: "blocking",
+                        user: token
+                    })
+                });
+                
+                const runData = await runRes.json();
+                loading.style.display = 'none';
+                submitBtn.disabled = false;
+                submitBtn.style.opacity = '1';
+                
+                // Display evaluation outputs cleanly
+                resultBox.style.display = 'block';
+                if (runData.data && runData.data.outputs) {
+                    const outputText = runData.data.outputs.text || JSON.stringify(runData.data.outputs, null, 2);
+                    resultBox.innerHTML = "<h3 style='color: var(--emerald); margin-bottom: 12px;'>Evaluation Result:</h3>" + outputText;
+                } else {
+                    resultBox.innerText = "Response: " + JSON.stringify(runData, null, 2);
+                }
+
+            } catch (err) {
+                loading.style.display = 'none';
+                submitBtn.disabled = false;
+                submitBtn.style.opacity = '1';
+                resultBox.style.display = 'block';
+                resultBox.innerText = "Error: " + err.message;
+            }
+        });
+    </script>
 </body>
 </html>
