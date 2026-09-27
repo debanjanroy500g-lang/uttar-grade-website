@@ -400,90 +400,110 @@
 
     <!-- Direct API Connection Script -->
     <script>
-        // Replace with your Dify Workflow API Key from your Dify dashboard API settings
-       app-cV1SnIIlOTiwUPj9RcaeTJxj
+    app-cV1SnIIlOTiwUPj9RcaeTJxj
 
-        document.getElementById('evalForm').addEventListener('submit', async function(e) {
-            e.preventDefault();
+    document.getElementById('evalForm').addEventListener('submit', async function(event) {
+        event.preventDefault(); // STOPS the page from jumping or reloading
+        
+        const tokenInput = document.getElementById('payToken');
+        const fileInput = document.getElementById('answerFile');
+        const submitBtn = document.getElementById('submitBtn');
+        const loading = document.getElementById('loading');
+        const resultBox = document.getElementById('resultBox');
+        
+        const token = tokenInput.value.trim();
+        const file = fileInput.files[0];
+
+        if (!token) {
+            alert('Please enter an access token.');
+            return;
+        }
+        if (!file) {
+            alert('Please select a PDF file.');
+            return;
+        }
+
+        // Lock UI and show loading
+        submitBtn.disabled = true;
+        submitBtn.style.opacity = '0.5';
+        loading.style.display = 'block';
+        resultBox.style.display = 'none';
+        resultBox.innerHTML = '';
+
+        try {
+            // Step 1: Upload file to Dify
+            const formData = new FormData();
+            formData.append('file', file);
+            formData.append('user', token);
+
+            const uploadRes = await fetch('https://api.dify.ai/v1/files/upload', {
+                method: 'POST',
+                headers: { 
+                    'Authorization': `Bearer ${DIFY_API_KEY}` 
+                },
+                body: formData
+            });
+
+            const uploadData = await uploadRes.json();
             
-            const token = document.getElementById('payToken').value.trim();
-            const fileInput = document.getElementById('answerFile').files[0];
-            const submitBtn = document.getElementById('submitBtn');
-            const loading = document.getElementById('loading');
-            const resultBox = document.getElementById('resultBox');
-            
-            if (!fileInput) {
-                alert('Please select a file to upload.');
-                return;
+            if (!uploadRes.ok || !uploadData.id) {
+                throw new Error(uploadData.message || 'File upload failed on Dify server.');
             }
+            
+            const fileId = uploadData.id;
 
-            submitBtn.disabled = true;
-            submitBtn.style.opacity = '0.6';
-            loading.style.display = 'block';
-            resultBox.style.display = 'none';
-
-            try {
-                // Step 1: Upload the file to Dify backend
-                const formData = new FormData();
-                formData.append('file', fileInput);
-                formData.append('user', token);
-
-                const uploadRes = await fetch('https://api.dify.ai/v1/files/upload', {
-                    method: 'POST',
-                    headers: { 'Authorization': `Bearer ${DIFY_API_KEY}` },
-                    body: formData
-                });
-                const uploadData = await uploadRes.json();
-                
-                if (!uploadData.id) {
-                    throw new Error('File upload rejected by server. Check your API key.');
-                }
-                const fileId = uploadData.id;
-
-                // Step 2: Trigger the workflow execution with the uploaded file & token
-                const runRes = await fetch('https://api.dify.ai/v1/workflows/run', {
-                    method: 'POST',
-                    headers: {
-                        'Authorization': `Bearer ${DIFY_API_KEY}`,
-                        'Content-Type': 'application/json'
+            // Step 2: Run Dify Workflow
+            const runRes = await fetch('https://api.dify.ai/v1/workflows/run', {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${DIFY_API_KEY}`,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    inputs: {
+                        access_token: token,
+                        query: "Evaluate this answer script."
                     },
-                    body: JSON.stringify({
-                        inputs: {
-                            access_token: token,
-                            query: "Evaluate this answer script."
-                        },
-                        files: [{
-                            type: "document",
-                            transfer_method: "local_file",
-                            upload_file_id: fileId
-                        }],
-                        response_mode: "blocking",
-                        user: token
-                    })
-                });
-                
-                const runData = await runRes.json();
-                loading.style.display = 'none';
-                submitBtn.disabled = false;
-                submitBtn.style.opacity = '1';
-                
-                // Display evaluation outputs cleanly
-                resultBox.style.display = 'block';
-                if (runData.data && runData.data.outputs) {
-                    const outputText = runData.data.outputs.text || JSON.stringify(runData.data.outputs, null, 2);
-                    resultBox.innerHTML = "<h3 style='color: var(--emerald); margin-bottom: 12px;'>Evaluation Result:</h3>" + outputText;
-                } else {
-                    resultBox.innerText = "Response: " + JSON.stringify(runData, null, 2);
-                }
+                    files: [{
+                        type: "document",
+                        transfer_method: "local_file",
+                        upload_file_id: fileId
+                    }],
+                    response_mode: "blocking",
+                    user: token
+                })
+            });
 
-            } catch (err) {
-                loading.style.display = 'none';
-                submitBtn.disabled = false;
-                submitBtn.style.opacity = '1';
-                resultBox.style.display = 'block';
-                resultBox.innerText = "Error: " + err.message;
+            const runData = await runRes.json();
+
+            if (!runRes.ok) {
+                throw new Error(runData.message || 'Workflow execution failed.');
             }
-        });
-    </script>
+
+            // Hide loading, unlock UI
+            loading.style.display = 'none';
+            submitBtn.disabled = false;
+            submitBtn.style.opacity = '1';
+
+            // Display results
+            resultBox.style.display = 'block';
+            if (runData.data && runData.data.outputs) {
+                const outputText = runData.data.outputs.text || JSON.stringify(runData.data.outputs, null, 2);
+                resultBox.innerHTML = "<h3 style='color: var(--emerald); margin-bottom: 12px;'>Evaluation Result:</h3>" + outputText;
+            } else {
+                resultBox.innerText = "Response received: " + JSON.stringify(runData, null, 2);
+            }
+
+        } catch (err) {
+            // Hide loading, unlock UI, show exact error on screen
+            loading.style.display = 'none';
+            submitBtn.disabled = false;
+            submitBtn.style.opacity = '1';
+            resultBox.style.display = 'block';
+            resultBox.innerHTML = `<span style="color: #ef4444; font-weight: bold;">Error:</span> ${err.message}`;
+            console.error(err);
+        }
+    });
+</script>
 </body>
 </html>
