@@ -62,6 +62,9 @@
             display: flex;
             align-items: center;
             justify-content: center;
+            font-weight: 800;
+            font-size: 20px;
+            color: #fff;
             box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
         }
         .logo-text { font-size: 19px; font-weight: 800; letter-spacing: -0.5px; }
@@ -117,8 +120,6 @@
             margin: 0 auto 40px auto;
             line-height: 1.6;
         }
-
-        /* Hero Specific */
         .hero-title { font-size: 48px; }
         .hero-title span {
             background: var(--accent);
@@ -254,13 +255,7 @@
     <header>
         <div class="nav-container">
             <a href="#" class="logo-box">
-                <div class="logo-icon">
-                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#080c14" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-                        <polyline points="14 2 14 8 20 8"></polyline>
-                        <path d="m9 15 2 2 4-4"></path>
-                    </svg>
-                </div>
+                <div class="logo-icon">उ</div>
                 <div class="logo-text">Uttor Grade <span>WB</span></div>
             </a>
             <nav class="nav-links">
@@ -300,7 +295,7 @@
         </div>
     </section>
 
-    <!-- 3. Workflow Section -->
+    <!-- 3. Workflow Section (Updated for Payment IDs) -->
     <section id="workflow" class="section border-t" style="border-top: 1px solid var(--border); background: rgba(17, 24, 39, 0.3);">
         <div class="badge">SIMPLE PROCESS</div>
         <h2 class="section-title">How to Evaluate Your Answer Sheet</h2>
@@ -314,13 +309,13 @@
             </div>
             <div class="info-card" style="text-align: center; border: none; background: transparent;">
                 <div class="info-icon" style="margin: 0 auto 20px auto; background: rgba(245, 158, 11, 0.1); color: #f59e0b;">2</div>
-                <h3>Get Your Passcode</h3>
-                <p>Your 4-digit passcode will instantly display on your screen after payment.</p>
+                <h3>Copy Payment ID</h3>
+                <p>Instantly copy your unique Razorpay Payment ID (starting with <code>pay_</code>) from your successful transaction receipt.</p>
             </div>
             <div class="info-card" style="text-align: center; border: none; background: transparent;">
                 <div class="info-icon" style="margin: 0 auto 20px auto; background: rgba(16, 185, 129, 0.1); color: #10b981;">3</div>
-                <h3>Upload Your PDF</h3>
-                <p>Enter your Passcode in the Evaluator below, upload your script, and view your detailed report.</p>
+                <h3>Paste & Evaluate</h3>
+                <p>Enter your Payment ID in the Cockpit below, paste your answer text, and view your detailed report.</p>
             </div>
         </div>
     </section>
@@ -373,25 +368,28 @@
         </div>
     </section>
 
-    <!-- 5. Evaluator Zone -->
+    <!-- 5. Evaluator Zone (Secure Backend Integration) -->
     <section id="evaluator" class="section">
         <div class="grader-container">
-            <h2 class="section-title" style="font-size: 28px;">WBCS Answer Evaluator</h2>
-            <p class="subtitle" style="margin-bottom: 20px;">Ready to check your work? Enter your 4-digit Passcode below to unlock the evaluator.</p>
+            <h2 class="section-title" style="font-size: 28px;">WBCS Answer Evaluator Cockpit</h2>
+            <p class="subtitle" style="margin-bottom: 20px;">Ready to check your work? Enter your Razorpay Payment ID and answer below.</p>
             
-            <div class="dify-frame">
-                <!-- Replace everything inside this dify-frame div with your Dify Script -->
-                <div style="max-width: 420px; text-align: center;">
-                    <div style="font-size: 36px; margin-bottom: 12px;">📄</div>
-                    <h3 style="font-size: 18px; font-weight: 700; margin-bottom: 10px;">Connect Dify Evaluator Widget Here</h3>
-                    <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 15px;">
-                        When you set up your Dify App, add a simple field named "Passcode" so the student can enter their payment code before uploading their paper.
-                    </p>
-                    <code style="background: #111827; border: 1px solid #374151; padding: 10px; border-radius: 8px; display: block; font-size: 11px; color: var(--emerald);">
-                        &lt;script src="https://udify.app/embed.js" data-token="YOUR_DIFY_TOKEN"&gt;&lt;/script&gt;
-                    </code>
+            <div class="dify-frame" style="display: block; text-align: left;">
+                <div style="width: 100%; max-width: 600px; margin: 0 auto;">
+                    <div style="margin-bottom: 20px;">
+                        <label style="display: block; font-size: 14px; font-weight: 600; margin-bottom: 8px; color: var(--text-main);">Razorpay Payment ID</label>
+                        <input type="text" id="paymentId" placeholder="e.g. pay_N7X38sK29" style="width: 100%; padding: 12px 16px; background: #080c14; border: 1px solid var(--border-highlight); border-radius: 12px; color: #fff; font-size: 14px; outline: none;" />
+                    </div>
+
+                    <div style="margin-bottom: 20px;">
+                        <label style="display: block; font-size: 14px; font-weight: 600; margin-bottom: 8px; color: var(--text-main);">Your Answer Text / Question</label>
+                        <textarea id="answerText" rows="6" placeholder="Paste your answer or essay here..." style="width: 100%; padding: 12px 16px; background: #080c14; border: 1px solid var(--border-highlight); border-radius: 12px; color: #fff; font-size: 14px; outline: none; resize: vertical;"></textarea>
+                    </div>
+
+                    <button onclick="submitEvaluation()" style="width: 100%; background: var(--emerald); color: #080c14; font-weight: 700; padding: 14px; border: none; border-radius: 12px; font-size: 15px; cursor: pointer; transition: background 0.2s;">Get AI Evaluation</button>
+
+                    <div id="result" style="display: none; margin-top: 24px; padding: 20px; background: #080c14; border: 1px solid var(--border-highlight); border-radius: 12px; color: #e5e7eb; font-size: 14px; white-space: pre-wrap; line-height: 1.6;"></div>
                 </div>
-                <!-- End Dify Script Replacement Zone -->
             </div>
         </div>
     </section>
@@ -400,6 +398,49 @@
     <footer>
         <p>&copy; 2026 Uttor Grade WB. Built for WBCS Aspirants in West Bengal. All rights reserved.</p>
     </footer>
+
+    <script>
+    async function submitEvaluation() {
+        const paymentId = document.getElementById('paymentId').value.trim();
+        const answerText = document.getElementById('answerText').value.trim();
+        const resultDiv = document.getElementById('result');
+
+        if (!paymentId.startsWith('pay_')) {
+            alert('Please enter a valid Razorpay Payment ID starting with "pay_".');
+            return;
+        }
+
+        if (!answerText) {
+            alert('Please enter your answer text.');
+            return;
+        }
+
+        resultDiv.style.display = 'block';
+        resultDiv.style.color = 'var(--text-muted)';
+        resultDiv.innerText = 'Evaluating your answer with AI, please wait...';
+
+        try {
+            const response = await fetch('/api/evaluate', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ paymentId, answerText })
+            });
+            
+            const data = await response.json();
+            
+            if (response.ok) {
+                resultDiv.style.color = 'var(--text-main)';
+                resultDiv.innerText = data.result;
+            } else {
+                resultDiv.style.color = '#ef4444';
+                resultDiv.innerText = 'Error: ' + (data.error || 'Failed to evaluate.');
+            }
+        } catch (err) {
+            resultDiv.style.color = '#ef4444';
+            resultDiv.innerText = 'Network error. Please try again.';
+        }
+    }
+    </script>
 
 </body>
 </html>
