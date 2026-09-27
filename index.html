@@ -379,8 +379,9 @@
                     <div style="font-size: 32px; margin-bottom: 15px;">🤖</div>
                     <h3 style="font-size: 18px; font-weight: 700; margin-bottom: 10px;">Connect Dify Widget Here</h3>
                     <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 15px;">
-                        Paste your Dify app embed code here. Set up your Dify app to ask the user for their "Access Token" as the first input field before they can upload a file.
-                    </p>
+           
+                
+                </p>
                     <code style="background: #111827; border: 1px solid #374151; padding: 10px; border-radius: 8px; display: block; font-size: 11px; color: var(--emerald);">
                         &lt;script src="https://udify.app/embed.js" data-token="YOUR_TOKEN"&gt;&lt;/script&gt;
                     </code>
@@ -394,6 +395,39 @@
     <footer>
         <p>&copy; 2026 Uttor Grade WB. Built for WBCS Aspirants in West Bengal. All rights reserved.</p>
     </footer>
-
+ <script>
+ window.difyChatbotConfig = {
+  token: 'RSr6YuHBkzj67Aq7',
+  baseUrl: 'https://udify.app',
+  inputs: {
+    // You can define the inputs from the Start node here
+    // key is the variable name
+    // e.g.
+    // name: "NAME"
+  },
+  systemVariables: {
+    // user_id: 'YOU CAN DEFINE USER ID HERE',
+    // conversation_id: 'YOU CAN DEFINE CONVERSATION ID HERE, IT MUST BE A VALID UUID',
+  },
+  userVariables: {
+    // avatar_url: 'YOU CAN DEFINE USER AVATAR URL HERE',
+    // name: 'YOU CAN DEFINE USER NAME HERE',
+  },
+ }
+</script>
+<script
+ src="https://udify.app/embed.min.js"
+ id="RSr6YuHBkzj67Aq7"
+ defer>
+</script>
+<style>
+  #dify-chatbot-bubble-button {
+    background-color: #1C64F2 !important;
+  }
+  #dify-chatbot-bubble-window {
+    width: 24rem !important;
+    height: 40rem !important;
+  }
+</style>
 </body>
 </html>
