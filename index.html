@@ -62,6 +62,9 @@
             display: flex;
             align-items: center;
             justify-content: center;
+            font-weight: 800;
+            font-size: 20px;
+            color: #fff;
             box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
         }
         .logo-text { font-size: 19px; font-weight: 800; letter-spacing: -0.5px; }
@@ -117,6 +120,8 @@
             margin: 0 auto 40px auto;
             line-height: 1.6;
         }
+
+        /* Hero Specific */
         .hero-title { font-size: 48px; }
         .hero-title span {
             background: var(--accent);
@@ -221,7 +226,7 @@
             text-align: center;
         }
         .dify-frame {
-            min-height: 480px;
+            min-height: 500px;
             background: #080c14;
             border: 1px dashed var(--border-highlight);
             border-radius: 16px;
@@ -252,13 +257,7 @@
     <header>
         <div class="nav-container">
             <a href="#" class="logo-box">
-                <div class="logo-icon">
-                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#080c14" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-                        <polyline points="14 2 14 8 20 8"></polyline>
-                        <path d="m9 15 2 2 4-4"></path>
-                    </svg>
-                </div>
+                <div class="logo-icon">उ</div>
                 <div class="logo-text">Uttor Grade <span>WB</span></div>
             </a>
             <nav class="nav-links">
@@ -266,7 +265,7 @@
                 <a href="#workflow">How it Works</a>
                 <a href="#pricing">Pricing</a>
             </nav>
-            <a href="#pricing" class="nav-btn">Get Credits</a>
+            <a href="#pricing" class="nav-btn">Buy Credits</a>
         </div>
     </header>
 
@@ -274,7 +273,7 @@
     <section class="section" style="padding-bottom: 20px; padding-top: 60px;">
         <div class="badge">CLAUDE SONNET 4.6 VISION POWERED</div>
         <h1 class="section-title hero-title">Instant, Official-Grade Feedback on <span>Handwritten WBCS Scripts</span></h1>
-        <p class="subtitle">Upload your handwritten Bengali or English answer sheets and get strict WBPSC-aligned evaluations in 60 seconds.</p>
+        <p class="subtitle">Stop waiting weeks for coaching center feedback. Upload your handwritten Bengali or English answer sheets and get strict WBPSC-aligned evaluations in 60 seconds.</p>
     </section>
 
     <!-- 2. Features Section -->
@@ -283,50 +282,50 @@
             <div class="info-card">
                 <div class="info-icon">✍️</div>
                 <h3>Bilingual OCR Engine</h3>
-                <p>Accurately decodes handwritten cursive in both English and traditional Bengali manuscript styles without skipping words.</p>
+                <p>Accurately decodes messy handwritten cursive in both English and traditional Bengali manuscript styles without skipping words.</p>
             </div>
             <div class="info-card">
                 <div class="info-icon">⚖️</div>
-                <h3>WBPSC Standard Marking</h3>
+                <h3>WBPSC Standard Scoring</h3>
                 <p>Grades based on strict parameters: intro clarity, body coherence, data accuracy, and the impact of your conclusion.</p>
             </div>
             <div class="info-card">
                 <div class="info-icon">🔒</div>
-                <h3>100% Secure & Private</h3>
-                <p>Your uploaded scripts are encrypted, processed securely, and never shared or saved for public training.</p>
+                <h3>100% Privacy Preserved</h3>
+                <p>Your uploaded scripts are encrypted, processed securely, and never saved or fed into public training models.</p>
             </div>
         </div>
     </section>
 
-    <!-- 3. Workflow Section -->
+    <!-- 3. Workflow Section (The Logical Bridge) -->
     <section id="workflow" class="section border-t" style="border-top: 1px solid var(--border); background: rgba(17, 24, 39, 0.3);">
         <div class="badge">SIMPLE PROCESS</div>
-        <h2 class="section-title">How to Evaluate Your Answer Sheet</h2>
-        <p class="subtitle">No complicated sign-ups or monthly commitments. Pay per use and practice at your pace.</p>
+        <h2 class="section-title">How Uttor Grade WB Works</h2>
+        <p class="subtitle">No subscriptions. Just a seamless pay-and-practice loop designed for serious aspirants.</p>
         
         <div class="grid-3">
             <div class="info-card" style="text-align: center; border: none; background: transparent;">
                 <div class="info-icon" style="margin: 0 auto 20px auto; background: rgba(59, 130, 246, 0.1); color: #3b82f6;">1</div>
-                <h3>Select a Credit Pack</h3>
-                <p>Choose ₹99, ₹199, or ₹299 below and complete your payment via Razorpay UPI.</p>
+                <h3>Choose a Practice Pack</h3>
+                <p>Select a credit bundle below and checkout securely via Razorpay.</p>
             </div>
             <div class="info-card" style="text-align: center; border: none; background: transparent;">
                 <div class="info-icon" style="margin: 0 auto 20px auto; background: rgba(245, 158, 11, 0.1); color: #f59e0b;">2</div>
-                <h3>Get Your Access Token</h3>
-                <p>Receive your unique evaluation Access Token upon completing your payment.</p>
+                <h3>Receive Access Token</h3>
+                <p>Instantly receive your private evaluator password via email and WhatsApp.</p>
             </div>
             <div class="info-card" style="text-align: center; border: none; background: transparent;">
                 <div class="info-icon" style="margin: 0 auto 20px auto; background: rgba(16, 185, 129, 0.1); color: #10b981;">3</div>
-                <h3>Enter Token & Evaluate</h3>
-                <p>Paste your Access Token in the Cockpit below, enter your answer script, and view your detailed evaluation.</p>
+                <h3>Upload & Evaluate</h3>
+                <p>Enter your token in the Cockpit below, upload your PDF, and get graded.</p>
             </div>
         </div>
     </section>
 
     <!-- 4. Pricing Section -->
     <section id="pricing" class="section">
-        <h2 class="section-title">Choose Your Practice Pack</h2>
-        <p class="subtitle">Zero monthly subscription fees. 1 Credit = 1 Complete Multi-Page Answer Script Evaluation.</p>
+        <h2 class="section-title">Top Up Your Credits</h2>
+        <p class="subtitle">Zero monthly commitments. 1 Credit = 1 Complete Multi-Page Answer Script Evaluation.</p>
         
         <div class="grid-3">
             <!-- Pocket Sachet -->
@@ -334,7 +333,7 @@
                 <div class="card-title">Pocket Sachet</div>
                 <div class="price">₹99</div>
                 <ul class="features-list">
-                    <li>✔️ <b>6 Entire Script Checks</b></li>
+                    <li>✔️ <b>6 Answer Script Checks</b></li>
                     <li>✔️ Valid for Languages & Optionals</li>
                     <li>⚡ ~₹16.50 per evaluation check</li>
                 </ul>
@@ -348,7 +347,7 @@
                 <div class="card-title" style="color: var(--emerald);">Value Pack</div>
                 <div class="price">₹199</div>
                 <ul class="features-list">
-                    <li>✔️ <b>16 Entire Script Checks</b></li>
+                    <li>✔️ <b>16 Answer Script Checks</b></li>
                     <li>🎁 <b>Includes 4 Bonus Credits</b></li>
                     <li>⚡ ~₹12.43 per evaluation check</li>
                 </ul>
@@ -361,7 +360,7 @@
                 <div class="card-title">Pro Routine</div>
                 <div class="price">₹299</div>
                 <ul class="features-list">
-                    <li>✔️ <b>30 Entire Script Checks</b></li>
+                    <li>✔️ <b>30 Answer Script Checks</b></li>
                     <li>🎁 <b>Includes 8 Bonus Credits</b></li>
                     <li>⚡ <b>~₹9.96 per check (Max Value)</b></li>
                 </ul>
@@ -371,28 +370,25 @@
         </div>
     </section>
 
-    <!-- 5. Evaluator Zone (Token-Based Backend Integration) -->
+    <!-- 5. The Evaluator Cockpit (Dify Embed Zone) -->
     <section id="evaluator" class="section">
         <div class="grader-container">
-            <h2 class="section-title" style="font-size: 28px;">WBCS Answer Evaluator Cockpit</h2>
-            <p class="subtitle" style="margin-bottom: 20px;">Ready to check your work? Enter your Access Token and answer script below.</p>
+            <h2 class="section-title" style="font-size: 28px;">WBCS Evaluator Cockpit</h2>
+            <p class="subtitle" style="margin-bottom: 20px;">Already bought your credits? Enter your access token inside the widget to begin.</p>
             
-            <div class="dify-frame" style="display: block; text-align: left;">
-                <div style="width: 100%; max-width: 600px; margin: 0 auto;">
-                    <div style="margin-bottom: 20px;">
-                        <label style="display: block; font-size: 14px; font-weight: 600; margin-bottom: 8px; color: var(--text-main);">Access Token</label>
-                        <input type="text" id="token" placeholder="Enter your token (e.g. UT-TOKEN-98A2)" style="width: 100%; padding: 12px 16px; background: #080c14; border: 1px solid var(--border-highlight); border-radius: 12px; color: #fff; font-size: 14px; outline: none;" />
-                    </div>
-
-                    <div style="margin-bottom: 20px;">
-                        <label style="display: block; font-size: 14px; font-weight: 600; margin-bottom: 8px; color: var(--text-main);">Your Answer Text / Question</label>
-                        <textarea id="answerText" rows="6" placeholder="Paste your answer or essay here..." style="width: 100%; padding: 12px 16px; background: #080c14; border: 1px solid var(--border-highlight); border-radius: 12px; color: #fff; font-size: 14px; outline: none; resize: vertical;"></textarea>
-                    </div>
-
-                    <button onclick="submitEvaluation()" style="width: 100%; background: var(--emerald); color: #080c14; font-weight: 700; padding: 14px; border: none; border-radius: 12px; font-size: 15px; cursor: pointer; transition: background 0.2s;">Get AI Evaluation</button>
-
-                    <div id="result" style="display: none; margin-top: 24px; padding: 20px; background: #080c14; border: 1px solid var(--border-highlight); border-radius: 12px; color: #e5e7eb; font-size: 14px; white-space: pre-wrap; line-height: 1.6;"></div>
+            <div class="dify-frame">
+                <!-- Replace everything inside this dify-frame div with your Dify Script -->
+                <div style="max-width: 400px; text-align: center;">
+                    <div style="font-size: 32px; margin-bottom: 15px;">🤖</div>
+                    <h3 style="font-size: 18px; font-weight: 700; margin-bottom: 10px;">Connect Dify Widget Here</h3>
+                    <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 15px;">
+                        Paste your Dify app embed code here. Set up your Dify app to ask the user for their "Access Token" as the first input field before they can upload a file.
+                    </p>
+                    <code style="background: #111827; border: 1px solid #374151; padding: 10px; border-radius: 8px; display: block; font-size: 11px; color: var(--emerald);">
+                        &lt;script src="https://udify.app/embed.js" data-token="YOUR_TOKEN"&gt;&lt;/script&gt;
+                    </code>
                 </div>
+                <!-- End Dify Script Replacement Zone -->
             </div>
         </div>
     </section>
@@ -401,49 +397,6 @@
     <footer>
         <p>&copy; 2026 Uttor Grade WB. Built for WBCS Aspirants in West Bengal. All rights reserved.</p>
     </footer>
-
-    <script>
-    async function submitEvaluation() {
-        const token = document.getElementById('token').value.trim();
-        const answerText = document.getElementById('answerText').value.trim();
-        const resultDiv = document.getElementById('result');
-
-        if (!token) {
-            alert('Please enter your Access Token.');
-            return;
-        }
-
-        if (!answerText) {
-            alert('Please enter your answer text.');
-            return;
-        }
-
-        resultDiv.style.display = 'block';
-        resultDiv.style.color = 'var(--text-muted)';
-        resultDiv.innerText = 'Evaluating your answer with AI, please wait...';
-
-        try {
-            const response = await fetch('/api/evaluate', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ token, answerText })
-            });
-            
-            const data = await response.json();
-            
-            if (response.ok) {
-                resultDiv.style.color = 'var(--text-main)';
-                resultDiv.innerText = data.result;
-            } else {
-                resultDiv.style.color = '#ef4444';
-                resultDiv.innerText = 'Error: ' + (data.error || 'Failed to evaluate.');
-            }
-        } catch (err) {
-            resultDiv.style.color = '#ef4444';
-            resultDiv.innerText = 'Network error. Please try again.';
-        }
-    }
-    </script>
 
 </body>
 </html>
