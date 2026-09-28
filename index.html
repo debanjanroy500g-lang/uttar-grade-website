@@ -3,15 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Uttor Grade WB - Official-grade AI evaluation for handwritten WBCS answer scripts.">
+    <meta name="description" content="Uttor Grade WB - AI feedback on handwritten WBCS answer scripts.">
     <title>Uttor Grade WB | WBCS Answer Script Evaluator</title>
-    <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
         :root {
             --bg-main: #080c14;
             --bg-card: #111827;
-            --bg-card-hover: #1f2937;
             --border: #1f2937;
             --border-highlight: #374151;
             --text-main: #f9fafb;
@@ -29,216 +27,102 @@
             overflow-x: hidden;
             scroll-behavior: smooth;
         }
-
-        /* Navbar */
         header {
-            position: sticky;
-            top: 0;
-            z-index: 50;
+            position: sticky; top: 0; z-index: 50;
             background: rgba(8, 12, 20, 0.85);
             backdrop-filter: blur(16px);
             border-bottom: 1px solid var(--border);
         }
         .nav-container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 16px 24px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
+            max-width: 1200px; margin: 0 auto; padding: 16px 24px;
+            display: flex; align-items: center; justify-content: space-between;
         }
-        .logo-box {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            text-decoration: none;
-            color: inherit;
-        }
+        .logo-box { display: flex; align-items: center; gap: 12px; text-decoration: none; color: inherit; }
         .logo-icon {
-            width: 40px;
-            height: 40px;
-            background: var(--accent);
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 800;
-            font-size: 20px;
-            color: #fff;
+            width: 40px; height: 40px; background: var(--accent); border-radius: 12px;
+            display: flex; align-items: center; justify-content: center;
+            font-weight: 800; font-size: 20px; color: #fff;
             box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
         }
         .logo-text { font-size: 19px; font-weight: 800; letter-spacing: -0.5px; }
         .logo-text span { color: var(--emerald); }
-        
         .nav-links { display: flex; gap: 32px; font-size: 14px; font-weight: 600; color: var(--text-muted); }
         .nav-links a { text-decoration: none; color: inherit; transition: color 0.2s; }
         .nav-links a:hover { color: var(--text-main); }
-        
         .nav-btn {
-            background: var(--emerald);
-            color: #080c14;
-            font-weight: 700;
-            padding: 10px 22px;
-            border-radius: 10px;
-            text-decoration: none;
-            font-size: 14px;
-            transition: all 0.2s;
+            background: var(--emerald); color: #080c14; font-weight: 700;
+            padding: 10px 22px; border-radius: 10px; text-decoration: none; font-size: 14px; transition: all 0.2s;
         }
         .nav-btn:hover { background: var(--emerald-dark); color: #fff; }
 
-        /* Shared Section Styles */
-        .section {
-            max-width: 1200px;
-            width: 100%;
-            margin: 0 auto;
-            padding: 80px 24px;
-            text-align: center;
-        }
+        .section { max-width: 1200px; width: 100%; margin: 0 auto; padding: 80px 24px; text-align: center; }
         .badge {
-            display: inline-block;
-            background: rgba(16, 185, 129, 0.1);
-            border: 1px solid rgba(16, 185, 129, 0.2);
-            color: var(--emerald);
-            font-weight: 700;
-            font-size: 12px;
-            padding: 6px 16px;
-            border-radius: 20px;
-            letter-spacing: 0.5px;
-            margin-bottom: 24px;
+            display: inline-block; background: rgba(16, 185, 129, 0.1);
+            border: 1px solid rgba(16, 185, 129, 0.2); color: var(--emerald);
+            font-weight: 700; font-size: 12px; padding: 6px 16px; border-radius: 20px;
+            letter-spacing: 0.5px; margin-bottom: 24px;
         }
-        .section-title {
-            font-size: 36px;
-            font-weight: 800;
-            margin-bottom: 16px;
-            letter-spacing: -1px;
-            line-height: 1.2;
-        }
-        .subtitle {
-            color: var(--text-muted);
-            font-size: 18px;
-            max-width: 650px;
-            margin: 0 auto 40px auto;
-            line-height: 1.6;
-        }
-
-        /* Hero Specific */
+        .section-title { font-size: 36px; font-weight: 800; margin-bottom: 16px; letter-spacing: -1px; line-height: 1.2; }
+        .subtitle { color: var(--text-muted); font-size: 18px; max-width: 650px; margin: 0 auto 40px auto; line-height: 1.6; }
         .hero-title { font-size: 48px; }
-        .hero-title span {
-            background: var(--accent);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
+        .hero-title span { background: var(--accent); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
 
-        /* Features & Workflow Grids */
         .grid-3 {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 24px;
-            text-align: left;
-            margin-top: 40px;
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 24px; text-align: left; margin-top: 40px;
         }
         .info-card {
-            background: var(--bg-card);
-            border: 1px solid var(--border);
-            padding: 32px;
-            border-radius: 20px;
-            transition: transform 0.3s ease;
+            background: var(--bg-card); border: 1px solid var(--border);
+            padding: 32px; border-radius: 20px; transition: transform 0.3s ease;
         }
         .info-card:hover { transform: translateY(-5px); border-color: var(--border-highlight); }
         .info-icon {
-            font-size: 28px;
-            margin-bottom: 20px;
-            width: 50px;
-            height: 50px;
-            background: rgba(16, 185, 129, 0.1);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border-radius: 12px;
+            font-size: 28px; margin-bottom: 20px; width: 50px; height: 50px;
+            background: rgba(16, 185, 129, 0.1); display: flex; align-items: center;
+            justify-content: center; border-radius: 12px;
         }
         .info-card h3 { font-size: 18px; font-weight: 700; margin-bottom: 10px; }
         .info-card p { font-size: 14px; color: var(--text-muted); }
 
-        /* Pricing Cards */
         .price-card {
-            background-color: var(--bg-card);
-            border: 1px solid var(--border);
-            border-radius: 24px;
-            padding: 40px 32px;
-            display: flex;
-            flex-direction: column;
-            text-align: left;
-            position: relative;
-            transition: all 0.3s ease;
+            background-color: var(--bg-card); border: 1px solid var(--border); border-radius: 24px;
+            padding: 40px 32px; display: flex; flex-direction: column; text-align: left;
+            position: relative; transition: all 0.3s ease;
         }
         .price-card:hover { transform: translateY(-8px); border-color: #3b82f6; box-shadow: 0 20px 40px rgba(0,0,0,0.4); }
         .price-card.featured { border: 2px solid var(--emerald); }
-        
         .pop-tag {
-            position: absolute;
-            top: -14px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: var(--emerald);
-            color: #000;
-            font-weight: 800;
-            font-size: 11px;
-            padding: 6px 16px;
-            border-radius: 20px;
+            position: absolute; top: -14px; left: 50%; transform: translateX(-50%);
+            background: var(--emerald); color: #000; font-weight: 800; font-size: 11px;
+            padding: 6px 16px; border-radius: 20px;
         }
         .card-title { font-size: 20px; font-weight: 700; margin-bottom: 8px; color: var(--text-muted); }
         .price { font-size: 46px; font-weight: 800; margin-bottom: 25px; color: #fff; }
         .features-list { margin-bottom: 35px; list-style: none; flex-grow: 1; }
-        .features-list li {
-            font-size: 14px;
-            color: #e5e7eb;
-            margin-bottom: 16px;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-        
-        /* Razorpay Overrides */
+        .features-list li { font-size: 14px; color: #e5e7eb; margin-bottom: 16px; display: flex; align-items: center; gap: 12px; }
+
         .price-card form { margin-top: auto !important; width: 100% !important; }
         .price-card button, .price-card .razorpay-payment-button {
-            width: 100% !important;
-            background: #2563eb !important;
-            color: white !important;
-            border: none !important;
-            padding: 16px !important;
-            border-radius: 12px !important;
-            font-weight: 700 !important;
-            font-size: 15px !important;
-            cursor: pointer !important;
-            transition: all 0.2s !important;
+            width: 100% !important; background: #2563eb !important; color: white !important;
+            border: none !important; padding: 16px !important; border-radius: 12px !important;
+            font-weight: 700 !important; font-size: 15px !important; cursor: pointer !important; transition: all 0.2s !important;
         }
         .price-card button:hover, .price-card .razorpay-payment-button:hover { background: #1d4ed8 !important; }
         .featured button, .featured .razorpay-payment-button { background: var(--emerald) !important; color: #000 !important; }
         .featured button:hover, .featured .razorpay-payment-button:hover { background: var(--emerald-dark) !important; color: #fff !important; }
 
-        /* Grader Embedded Area */
         .grader-container {
-            background-color: var(--bg-card);
-            border: 1px solid var(--border);
-            border-radius: 24px;
-            padding: 40px;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
-            text-align: center;
+            background-color: var(--bg-card); border: 1px solid var(--border); border-radius: 24px;
+            padding: 40px; box-shadow: 0 20px 40px rgba(0,0,0,0.3); text-align: center;
         }
         .dify-frame {
-            min-height: 300px;
-            background: #080c14;
-            border: 1px solid var(--border-highlight);
-            border-radius: 16px;
-            padding: 30px;
-            margin-top: 30px;
-            text-align: left;
+            min-height: 300px; background: #080c14; border: 1px solid var(--border-highlight);
+            border-radius: 16px; padding: 30px; margin-top: 30px; text-align: left;
         }
+        .hint { font-size: 12px; color: var(--text-muted); margin-top: 6px; }
 
-        /* Footer */
         footer { border-top: 1px solid var(--border); padding: 40px 24px; text-align: center; color: var(--text-muted); font-size: 14px; }
 
-        /* Mobile Adjustments */
         @media (max-width: 768px) {
             .hero-title { font-size: 36px; }
             .section-title { font-size: 28px; }
@@ -250,11 +134,10 @@
 </head>
 <body>
 
-    <!-- Header -->
     <header>
         <div class="nav-container">
             <a href="#" class="logo-box">
-                <div class="logo-icon">उ</div>
+                <div class="logo-icon">উ</div>
                 <div class="logo-text">Uttor Grade <span>WB</span></div>
             </a>
             <nav class="nav-links">
@@ -266,40 +149,37 @@
         </div>
     </header>
 
-    <!-- 1. Hero Section -->
     <section class="section" style="padding-bottom: 20px; padding-top: 60px;">
-        <div class="badge">CLAUDE SONNET 4.6 VISION POWERED</div>
-        <h1 class="section-title hero-title">Instant, Official-Grade Feedback on <span>Handwritten WBCS Scripts</span></h1>
-        <p class="subtitle">Stop waiting weeks for coaching center feedback. Upload your handwritten Bengali or English answer sheets and get strict WBPSC-aligned evaluations in 60 seconds.</p>
+        <div class="badge">POWERED BY CLAUDE AI VISION</div>
+        <h1 class="section-title hero-title">Instant, Detailed Feedback on <span>Handwritten WBCS Scripts</span></h1>
+        <p class="subtitle">Stop waiting weeks for coaching center feedback. Upload your handwritten Bengali or English answer sheets and get structured, WBPSC-style evaluations in about a minute.</p>
     </section>
 
-    <!-- 2. Features Section -->
     <section id="features" class="section" style="padding-top: 20px;">
         <div class="grid-3">
             <div class="info-card">
                 <div class="info-icon">✍️</div>
-                <h3>Bilingual OCR Engine</h3>
-                <p>Accurately decodes messy handwritten cursive in both English and traditional Bengali manuscript styles without skipping words.</p>
+                <h3>Bilingual Handwriting Reading</h3>
+                <p>Reads handwritten English and Bengali answers, and flags any words it can't read clearly instead of guessing.</p>
             </div>
             <div class="info-card">
                 <div class="info-icon">⚖️</div>
-                <h3>WBPSC Standard Scoring</h3>
-                <p>Grades based on strict parameters: intro clarity, body coherence, data accuracy, and the impact of your conclusion.</p>
+                <h3>Structured Scoring</h3>
+                <p>Scores your answer on introduction clarity, body coherence, factual accuracy, examples and conclusion impact.</p>
             </div>
             <div class="info-card">
                 <div class="info-icon">🔒</div>
-                <h3>100% Privacy Preserved</h3>
-                <p>Your uploaded scripts are encrypted, processed securely, and never saved or fed into public training models.</p>
+                <h3>Privacy Minded</h3>
+                <p>Your uploaded scripts are processed securely and are not stored on our servers.</p>
             </div>
         </div>
     </section>
 
-    <!-- 3. Workflow Section -->
-    <section id="workflow" class="section border-t" style="border-top: 1px solid var(--border); background: rgba(17, 24, 39, 0.3);">
+    <section id="workflow" class="section" style="border-top: 1px solid var(--border); background: rgba(17, 24, 39, 0.3);">
         <div class="badge">SIMPLE PROCESS</div>
         <h2 class="section-title">How Uttor Grade WB Works</h2>
         <p class="subtitle">No subscriptions. Just a seamless pay-and-practice loop designed for serious aspirants.</p>
-        
+
         <div class="grid-3">
             <div class="info-card" style="text-align: center; border: none; background: transparent;">
                 <div class="info-icon" style="margin: 0 auto 20px auto; background: rgba(59, 130, 246, 0.1); color: #3b82f6;">1</div>
@@ -308,24 +188,22 @@
             </div>
             <div class="info-card" style="text-align: center; border: none; background: transparent;">
                 <div class="info-icon" style="margin: 0 auto 20px auto; background: rgba(245, 158, 11, 0.1); color: #f59e0b;">2</div>
-                <h3>Receive Access Token</h3>
-                <p>Instantly receive your private evaluator password via email and WhatsApp.</p>
+                <h3>Copy Your Payment ID</h3>
+                <p>After paying, Razorpay shows a Payment ID starting with <b>pay_</b>. Copy it — it's also in your Razorpay receipt.</p>
             </div>
             <div class="info-card" style="text-align: center; border: none; background: transparent;">
                 <div class="info-icon" style="margin: 0 auto 20px auto; background: rgba(16, 185, 129, 0.1); color: #10b981;">3</div>
                 <h3>Upload & Evaluate</h3>
-                <p>Enter your token in the Cockpit below, upload your PDF, and get graded.</p>
+                <p>Paste your Payment ID in the Cockpit below, upload your script, and get graded.</p>
             </div>
         </div>
     </section>
 
-    <!-- 4. Pricing Section -->
     <section id="pricing" class="section">
         <h2 class="section-title">Top Up Your Credits</h2>
-        <p class="subtitle">Zero monthly commitments. 1 Credit = 1 Complete Multi-Page Answer Script Evaluation.</p>
-        
+        <p class="subtitle">Zero monthly commitments. 1 Credit = 1 Answer Script Evaluation.</p>
+
         <div class="grid-3">
-            <!-- Pocket Sachet -->
             <div class="price-card">
                 <div class="card-title">Pocket Sachet</div>
                 <div class="price">₹99</div>
@@ -337,7 +215,6 @@
                 <form><script src="https://checkout.razorpay.com/v1/payment-button.js" data-payment_button_id="pl_ThAlPCXzy1hiZV" async> </script> </form>
             </div>
 
-            <!-- Value Pack -->
             <div class="price-card featured">
                 <div class="pop-tag">MOST POPULAR</div>
                 <div class="card-title" style="color: var(--emerald);">Value Pack</div>
@@ -350,7 +227,6 @@
                 <form><script src="https://checkout.razorpay.com/v1/payment-button.js" data-payment_button_id="pl_ThB2gfC6x0mqgc" async> </script> </form>
             </div>
 
-            <!-- Pro Routine -->
             <div class="price-card">
                 <div class="card-title">Pro Routine</div>
                 <div class="price">₹299</div>
@@ -364,146 +240,82 @@
         </div>
     </section>
 
-    <!-- 5. The Evaluator Cockpit (Direct Upload Form Zone) -->
     <section id="evaluators" class="section">
         <div class="grader-container">
             <h2 class="section-title" style="font-size: 28px;">WBCS Evaluator Cockpit</h2>
-            <p class="subtitle" style="margin-bottom: 20px;">Enter your payment ID and upload your PDF answer script for instant AI grading.</p>
-            
+            <p class="subtitle" style="margin-bottom: 20px;">Enter your Razorpay Payment ID and upload your answer script for instant AI feedback.</p>
+
             <div class="dify-frame">
-                <!-- Direct Upload Form -->
                 <form id="evalForm">
                     <div style="margin-bottom: 20px;">
-                        <label style="display: block; font-weight: 700; margin-bottom: 8px; color: var(--text-main);">Access Token (pay_ ID):</label>
-                        <input type="text" id="payToken" required placeholder="e.g. pay_N123456789" style="width: 100%; padding: 14px; background: #030712; border: 1px solid var(--border-highlight); color: #fff; border-radius: 10px; font-size: 15px; outline: none;">
+                        <label style="display: block; font-weight: 700; margin-bottom: 8px;">Payment ID (starts with pay_):</label>
+                        <input type="text" id="payToken" required placeholder="e.g. pay_N123456789" autocomplete="off" style="width: 100%; padding: 14px; background: #030712; border: 1px solid var(--border-highlight); color: #fff; border-radius: 10px; font-size: 15px; outline: none;">
+                        <div class="hint">Find it on the Razorpay success screen or in your Razorpay receipt email.</div>
                     </div>
-                    
+
                     <div style="margin-bottom: 20px;">
-                        <label style="display: block; font-weight: 700; margin-bottom: 8px; color: var(--text-main);">Upload Answer Script (PDF / Image):</label>
+                        <label style="display: block; font-weight: 700; margin-bottom: 8px;">Upload Answer Script (PDF / Image, max 10 MB):</label>
                         <input type="file" id="answerFile" accept=".pdf,image/*" required style="width: 100%; padding: 12px; background: #030712; border: 1px solid var(--border-highlight); color: var(--text-muted); border-radius: 10px; font-size: 14px;">
                     </div>
-                    
-                    <button type="submit" id="submitBtn" style="background: var(--emerald); color: #000; border: none; padding: 16px; font-size: 16px; font-weight: 800; border-radius: 10px; cursor: pointer; width: 100%; transition: background 0.2s;">Evaluate Answer Now</button>
+
+                    <button type="submit" id="submitBtn" style="background: var(--emerald); color: #000; border: none; padding: 16px; font-size: 16px; font-weight: 800; border-radius: 10px; cursor: pointer; width: 100%;">Evaluate Answer Now</button>
                 </form>
 
-                <div id="loading" style="display: none; margin-top: 20px; text-align: center; color: var(--emerald); font-weight: 700;">Evaluating your script, please wait (~30 seconds)...</div>
-                
+                <div id="loading" style="display: none; margin-top: 20px; text-align: center; color: var(--emerald); font-weight: 700;">Evaluating your script, please wait (~30–60 seconds)...</div>
+
                 <div id="resultBox" style="display: none; margin-top: 20px; padding: 20px; background: #030712; border: 1px solid var(--border-highlight); border-radius: 10px; white-space: pre-wrap; line-height: 1.6; color: #e5e7eb; font-size: 14px;"></div>
             </div>
         </div>
     </section>
 
-    <!-- Footer -->
     <footer>
         <p>&copy; 2026 Uttor Grade WB. Built for WBCS Aspirants in West Bengal. All rights reserved.</p>
     </footer>
 
-    <!-- Direct API Connection Script -->
     <script>
-    app-cV1SnIIlOTiwUPj9RcaeTJxj
+        // Talks ONLY to your own Supabase function. No secret keys live in this file.
+        const EVALUATE_ENDPOINT = 'https://pdzhoilcfbqrimkqtcsy.supabase.co/functions/v1/evaluate';
 
-    document.getElementById('evalForm').addEventListener('submit', async function(event) {
-        event.preventDefault(); // STOPS the page from jumping or reloading
-        
-        const tokenInput = document.getElementById('payToken');
-        const fileInput = document.getElementById('answerFile');
-        const submitBtn = document.getElementById('submitBtn');
-        const loading = document.getElementById('loading');
-        const resultBox = document.getElementById('resultBox');
-        
-        const token = tokenInput.value.trim();
-        const file = fileInput.files[0];
+        document.getElementById('evalForm').addEventListener('submit', async function (e) {
+            e.preventDefault();
 
-        if (!token) {
-            alert('Please enter an access token.');
-            return;
-        }
-        if (!file) {
-            alert('Please select a PDF file.');
-            return;
-        }
+            const token = document.getElementById('payToken').value.trim();
+            const file = document.getElementById('answerFile').files[0];
+            const submitBtn = document.getElementById('submitBtn');
+            const loading = document.getElementById('loading');
+            const resultBox = document.getElementById('resultBox');
 
-        // Lock UI and show loading
-        submitBtn.disabled = true;
-        submitBtn.style.opacity = '0.5';
-        loading.style.display = 'block';
-        resultBox.style.display = 'none';
-        resultBox.innerHTML = '';
+            if (!file) { alert('Please select a file to upload.'); return; }
+            if (!token) { alert('Please enter your Payment ID.'); return; }
 
-        try {
-            // Step 1: Upload file to Dify
-            const formData = new FormData();
-            formData.append('file', file);
-            formData.append('user', token);
+            submitBtn.disabled = true;
+            submitBtn.style.opacity = '0.6';
+            loading.style.display = 'block';
+            resultBox.style.display = 'none';
+            resultBox.style.color = '#e5e7eb';
 
-            const uploadRes = await fetch('https://api.dify.ai/v1/files/upload', {
-                method: 'POST',
-                headers: { 
-                    'Authorization': `Bearer ${DIFY_API_KEY}` 
-                },
-                body: formData
-            });
+            try {
+                const formData = new FormData();
+                formData.append('token', token);
+                formData.append('file', file);
 
-            const uploadData = await uploadRes.json();
-            
-            if (!uploadRes.ok || !uploadData.id) {
-                throw new Error(uploadData.message || 'File upload failed on Dify server.');
+                const res = await fetch(EVALUATE_ENDPOINT, { method: 'POST', body: formData });
+                const data = await res.json();
+
+                if (!res.ok) throw new Error(data.error || 'Evaluation failed. Please try again.');
+
+                resultBox.style.display = 'block';
+                resultBox.textContent = data.result + '\n\n— Credits remaining on this Payment ID: ' + data.credits_remaining;
+            } catch (err) {
+                resultBox.style.display = 'block';
+                resultBox.style.color = '#f87171';
+                resultBox.textContent = 'Error: ' + err.message;
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.style.opacity = '1';
+                loading.style.display = 'none';
             }
-            
-            const fileId = uploadData.id;
-
-            // Step 2: Run Dify Workflow
-            const runRes = await fetch('https://api.dify.ai/v1/workflows/run', {
-                method: 'POST',
-                headers: {
-                    'Authorization': `Bearer ${DIFY_API_KEY}`,
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    inputs: {
-                        access_token: token,
-                        query: "Evaluate this answer script."
-                    },
-                    files: [{
-                        type: "document",
-                        transfer_method: "local_file",
-                        upload_file_id: fileId
-                    }],
-                    response_mode: "blocking",
-                    user: token
-                })
-            });
-
-            const runData = await runRes.json();
-
-            if (!runRes.ok) {
-                throw new Error(runData.message || 'Workflow execution failed.');
-            }
-
-            // Hide loading, unlock UI
-            loading.style.display = 'none';
-            submitBtn.disabled = false;
-            submitBtn.style.opacity = '1';
-
-            // Display results
-            resultBox.style.display = 'block';
-            if (runData.data && runData.data.outputs) {
-                const outputText = runData.data.outputs.text || JSON.stringify(runData.data.outputs, null, 2);
-                resultBox.innerHTML = "<h3 style='color: var(--emerald); margin-bottom: 12px;'>Evaluation Result:</h3>" + outputText;
-            } else {
-                resultBox.innerText = "Response received: " + JSON.stringify(runData, null, 2);
-            }
-
-        } catch (err) {
-            // Hide loading, unlock UI, show exact error on screen
-            loading.style.display = 'none';
-            submitBtn.disabled = false;
-            submitBtn.style.opacity = '1';
-            resultBox.style.display = 'block';
-            resultBox.innerHTML = `<span style="color: #ef4444; font-weight: bold;">Error:</span> ${err.message}`;
-            console.error(err);
-        }
-    });
-</script>
+        });
+    </script>
 </body>
 </html>
