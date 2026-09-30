@@ -1,0 +1,11 @@
+name: Keep Supabase alive
+on:
+  schedule:
+    - cron: "0 6 * * 1,4"
+  workflow_dispatch:
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ping Supabase
+        run: curl -fsS --retry 3 --max-time 30 "https://pdzhoilcfbqrimkqtcsy.supabase.co/functions/v1/keepalive"
