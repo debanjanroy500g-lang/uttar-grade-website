@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Evaluate your answer — Uttar Grade</title>
+<link rel="stylesheet" href="style.css">
+<style>
+  .ev-head { padding: 36px 0 0; }
+  .ev-head p.tag { display:inline-block; font-size:13px; font-weight:600; color:var(--red-pen); border:1px solid var(--rule); padding:4px 12px; margin-bottom:10px; }
+  .ev-grid { display: grid; grid-template-columns: 1fr; gap: 24px; padding: 24px 0 60px; }
+  .up-card { background: var(--paper-card); border: 1px solid var(--rule); border-left: 3px solid var(--red-pen); padding: 32px; }
+  #loading { display:none; text-align:center; padding: 30px 0; color: var(--red-pen); font-weight:600; }
+  #reportWrap { display:none; }
+  .score-band { display:flex; align-items:center; gap:24px; background: var(--paper-card); border: 1px solid var(--rule); padding: 28px 32px; margin-bottom: 18px; }
+  .score-circle {
+    width: 84px; height: 84px; border-radius: 50%; border: 5px solid var(--red-pen);
+    display:flex; align-items:center; justify-content:center; flex:none;
+    font-family:'Fraunces', serif; font-size:22px; color:var(--ink);
+  }
+  .score-circle small { font-size:12px; color:var(--ink-faint); display:block; }
+  .report-card { background: var(--paper-card); border: 1px solid var(--rule); padding: 26px 30px; margin-bottom: 14px; }
+  .report-card h3 { font-size:16px; margin-bottom:10px; font-family:'IBM Plex Sans',sans-serif; font-weight:700; color: var(--red-pen); }
+  .report-card .body { white-space: pre-wrap; font-size: 14.5px; line-height:1.7; color: var(--ink); }
+  #errorBox { display:none; color: var(--red-pen); font-weight:600; padding: 16px 0; }
+</style>
+</head>
+<body>
+
+<header>
+  <nav class="nav">
+    <a href="dashboard.html" class="brand">
+      <svg class="brand-mark" viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg">
+        <rect x="1" y="1" width="38" height="38" fill="none" stroke="var(--ink)" stroke-width="1.5"/>
+        <rect x="6" y="6" width="28" height="28" fill="var(--ink)"/>
+        <text x="20" y="25" text-anchor="middle" font-family="Fraunces, serif" font-size="15" font-weight="600" fill="var(--paper)">UG</text>
+        <line x1="12" y1="30.5" x2="28" y2="30.5" stroke="var(--red-pen)" stroke-width="2.4" stroke-linecap="round"/>
+      </svg>
+      <span class="brand-name">Uttar <em>Grade</em></span>
+    </a>
+    <div class="nav-links">
+      <a href="dashboard.html">← Back to dashboard</a>
+    </div>
+  </nav>
+</header>
+
+<div class="wrap ev-head">
+  <p class="tag" id="examTag">Exam</p>
+  <h1 style="font-size:26px;">Upload your answer</h1>
+</div>
+
+<div class="wrap ev-grid">
+  <div class="up-card">
+    <form id="evalForm">
+      <div class="field">
+        <label for="payToken">Access code</label>
+        <input type="text" id="payToken" required placeholder="e.g. pay_N123456789" autocomplete="off">
+        <div class="hint">This is your Razorpay Payment ID for now — full account-based credits are coming next.</div>
+      </div>
+      <div class="field">
+        <label for="answerFile">Answer script (PDF or image, max 10 MB)</label>
+        <input type="file" id="answerFile" accept=".pdf,image/*" required>
+      </div>
+      <button type="submit" id="submitBtn" class="btn btn-primary" style="width:100%;">Evaluate my answer</button>
+    </form>
+    <div id="loading">Evaluating your script — usually takes 30–60 seconds…</div>
+    <div id="errorBox"></div>
+  </div>
+
+  <div id="reportWrap"></div>
+</div>
+
+<script>
+  const params = new URLSearchParams(window.location.search);
+  document.getElementById('examTag').textContent = params.get('exam') ? params.get('exam').toUpperCase() : 'General';
+
+  const EVALUATE_ENDPOINT = 'https://pdzhoilcfbqrimkqtcsy.supabase.co/functions/v1/evaluate';
+
+  document.getElementById('evalForm').addEventListener('submit', async function (e) {
+    e.preventDefault();
+    const token = document.getElementById('payToken').value.trim();
+    const file = document.getElementById('answerFile').files[0];
+    const submitBtn = document.getElementById('submitBtn');
+    const loading = document.getElementById('loading');
+    const errorBox = document.getElementById('errorBox');
+    const reportWrap = document.getElementById('reportWrap');
+
+    if (!file || !token) return;
+
+    submitBtn.disabled = true;
+    loading.style.display = 'block';
+    errorBox.style.display = 'none';
+    reportWrap.style.display = 'none';
+    reportWrap.innerHTML = '';
+
+    try {
+      const formData = new FormData();
+      formData.append('token', token);
+      formData.append('file', file);
+
+      const res = await fetch(EVALUATE_ENDPOINT, { method: 'POST', body: formData });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Evaluation failed. Please try again.');
+
+      renderReport(data.result, data.credits_remaining);
+    } catch (err) {
+      errorBox.style.display = 'block';
+      errorBox.textContent = 'Error: ' + err.message;
+    } finally {
+      submitBtn.disabled = false;
+      loading.style.display = 'none';
+    }
+  });
+
+  function renderReport(text, creditsLeft) {
+    const reportWrap = document.getElementById('reportWrap');
+    reportWrap.style.display = 'block';
+
+    // Pull a score like "6/10" if the model included one.
+    const scoreMatch = text.match(/(\d{1,2}(?:\.\d)?)\s*\/\s*10/);
+    const scoreHtml = scoreMatch
+      ? `<div class="score-band"><div class="score-circle">${scoreMatch[1]}<small>/10</small></div>
+         <div><div style="font-weight:600; font-size:15px;">Overall score</div>
+         <div style="color:var(--ink-soft); font-size:13.5px;">Credits remaining: ${creditsLeft}</div></div></div>`
+      : `<div class="score-band"><div style="font-weight:600;">Credits remaining: ${creditsLeft}</div></div>`;
+
+    // Split on markdown-style "## Heading" if the model used them; otherwise show as one card.
+    const sections = text.split(/\n(?=##\s)/);
+    let cardsHtml = '';
+    if (sections.length > 1 || /^##\s/.test(text)) {
+      sections.forEach(sec => {
+        const m = sec.match(/^##\s*(.+)\n([\s\S]*)/);
+        if (m) {
+          cardsHtml += `<div class="report-card"><h3>${m[1].trim()}</h3><div class="body">${m[2].trim()}</div></div>`;
+        } else if (sec.trim()) {
+          cardsHtml += `<div class="report-card"><div class="body">${sec.trim()}</div></div>`;
+        }
+      });
+    } else {
+      cardsHtml = `<div class="report-card"><div class="body">${text}</div></div>`;
+    }
+
+    reportWrap.innerHTML = scoreHtml + cardsHtml;
+  }
+</script>
+</body>
+</html>

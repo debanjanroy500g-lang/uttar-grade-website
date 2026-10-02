@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dashboard — Uttar Grade</title>
+<link rel="stylesheet" href="style.css">
+<style>
+  .dash-head { padding: 40px 0 0; }
+  .dash-head h1 { font-size: 28px; margin-bottom: 4px; }
+  .dash-head p { color: var(--ink-soft); font-size: 15px; }
+  .tabs { display: flex; gap: 2px; margin: 28px 0 0; border-bottom: 1px solid var(--rule); }
+  .tab-btn {
+    padding: 12px 22px; font-family: 'IBM Plex Sans', sans-serif; font-size: 15px; font-weight: 600;
+    background: transparent; border: none; cursor: pointer; color: var(--ink-soft);
+    border-bottom: 2px solid transparent; margin-bottom: -1px;
+  }
+  .tab-btn.active { color: var(--ink); border-bottom-color: var(--red-pen); }
+  .tab-panel { display: none; padding: 30px 0 60px; }
+  .tab-panel.active { display: block; }
+  .exam-pick {
+    display: flex; align-items: center; justify-content: space-between;
+    border: 1px solid var(--rule); background: var(--paper-card); padding: 22px 26px; margin-bottom: 14px;
+  }
+  .exam-pick h3 { font-size: 17px; margin-bottom: 4px; }
+  .exam-pick p { color: var(--ink-soft); font-size: 14px; }
+  .credit-pill {
+    display: inline-flex; align-items: center; gap: 8px; border: 1px solid var(--rule);
+    padding: 8px 16px; font-size: 14px; font-weight: 600; background: var(--paper-card);
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <nav class="nav">
+    <a href="dashboard.html" class="brand">
+      <svg class="brand-mark" viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg">
+        <rect x="1" y="1" width="38" height="38" fill="none" stroke="var(--ink)" stroke-width="1.5"/>
+        <rect x="6" y="6" width="28" height="28" fill="var(--ink)"/>
+        <text x="20" y="25" text-anchor="middle" font-family="Fraunces, serif" font-size="15" font-weight="600" fill="var(--paper)">UG</text>
+        <line x1="12" y1="30.5" x2="28" y2="30.5" stroke="var(--red-pen)" stroke-width="2.4" stroke-linecap="round"/>
+      </svg>
+      <span class="brand-name">Uttar <em>Grade</em></span>
+    </a>
+    <div class="nav-links">
+      <span class="credit-pill">Credits: <span id="creditCount">—</span></span>
+      <a href="index.html#pricing">Buy more</a>
+      <a href="login.html">Log out</a>
+    </div>
+  </nav>
+</header>
+
+<div class="wrap dash-head">
+  <h1>Choose what you're preparing for</h1>
+  <p>Pick an exam, then upload a handwritten answer to get it evaluated.</p>
+
+  <div class="tabs">
+    <button class="tab-btn active" data-tab="upsc">UPSC</button>
+    <button class="tab-btn" data-tab="wbcs">WBCS</button>
+    <button class="tab-btn" data-tab="state">State PCS</button>
+  </div>
+</div>
+
+<div class="wrap">
+  <div class="tab-panel active" id="panel-upsc">
+    <div class="exam-pick">
+      <div><h3>UPSC Civil Services — Mains</h3><p>General Studies I–IV, Essay, and Optional papers</p></div>
+      <a href="evaluate.html?exam=upsc" class="btn btn-primary">Upload answer</a>
+    </div>
+  </div>
+
+  <div class="tab-panel" id="panel-wbcs">
+    <div class="exam-pick">
+      <div><h3>WBCS — Mains</h3><p>General Studies and Optional papers, Bengali or English</p></div>
+      <a href="evaluate.html?exam=wbcs" class="btn btn-primary">Upload answer</a>
+    </div>
+  </div>
+
+  <div class="tab-panel" id="panel-state">
+    <div class="exam-grid" id="stateGrid"></div>
+  </div>
+</div>
+
+<script>
+  document.querySelectorAll('.tab-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+      btn.classList.add('active');
+      document.getElementById('panel-' + btn.dataset.tab).classList.add('active');
+    });
+  });
+
+  const states = [
+    ['UPPSC', 'Uttar Pradesh'], ['BPSC', 'Bihar'], ['RPSC', 'Rajasthan'],
+    ['MPPSC', 'Madhya Pradesh'], ['MPSC', 'Maharashtra'], ['UKPSC', 'Uttarakhand'],
+    ['HPAS', 'Himachal Pradesh'], ['APPSC', 'Andhra Pradesh'], ['GPSC', 'Gujarat'],
+    ['TNPSC', 'Tamil Nadu'], ['KPSC', 'Karnataka'], ['Kerala PSC', 'Kerala'],
+    ['OPSC', 'Odisha'], ['PPSC', 'Punjab'], ['JPSC', 'Jharkhand'],
+    ['CGPSC', 'Chhattisgarh'], ['APSC', 'Assam']
+  ];
+  const grid = document.getElementById('stateGrid');
+  states.forEach(([code, state]) => {
+    const a = document.createElement('a');
+    a.href = 'evaluate.html?exam=' + encodeURIComponent(code);
+    a.className = 'exam-card';
+    a.style.textDecoration = 'none'; a.style.color = 'inherit';
+    a.innerHTML = `<div><div class="ex-code">${code}</div><div class="ex-state">${state}</div></div><span class="ex-arrow">→</span>`;
+    grid.appendChild(a);
+  });
+
+  // Credits display — placeholder until accounts are wired to the real credits table.
+  document.getElementById('creditCount').textContent = '—';
+</script>
+</body>
+</html>
