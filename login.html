@@ -76,27 +76,36 @@
 </div>
 
 <script>
-  // Front-end only for now — this does not yet call a real backend.
-  // Wiring this to actual OTP delivery and session creation is the next backend step.
-  const tabEmail = document.getElementById('tabEmail');
-  const tabPhone = document.getElementById('tabPhone');
-  const label = document.getElementById('identifierLabel');
+ <script>
+  const SEND_OTP = 'https://pdzhoilcfbqrimkqtcsy.supabase.co/functions/v1/send-otp';
+  const VERIFY_OTP = 'https://pdzhoilcfbqrimkqtcsy.supabase.co/functions/v1/verify-otp';
+
   const input = document.getElementById('identifier');
+  let currentEmail = '';
 
-  tabEmail.addEventListener('click', () => {
-    tabEmail.classList.add('active'); tabPhone.classList.remove('active');
-    label.textContent = 'Email address'; input.placeholder = 'you@example.com'; input.type = 'text';
-  });
-  tabPhone.addEventListener('click', () => {
-    tabPhone.classList.add('active'); tabEmail.classList.remove('active');
-    label.textContent = 'Phone number'; input.placeholder = '10-digit mobile number'; input.type = 'tel';
-  });
-
-  document.getElementById('requestForm').addEventListener('submit', (e) => {
+  document.getElementById('requestForm').addEventListener('submit', async (e) => {
     e.preventDefault();
-    document.getElementById('otpSentTo').textContent = 'Sent to ' + input.value;
-    document.getElementById('stepRequest').style.display = 'none';
-    document.getElementById('stepOtp').style.display = 'block';
+    currentEmail = input.value.trim();
+    const btn = e.target.querySelector('button');
+    btn.disabled = true; btn.textContent = 'Sending…';
+
+    try {
+      const res = await fetch(SEND_OTP, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: currentEmail }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Could not send code.');
+
+      document.getElementById('otpSentTo').textContent = 'Sent to ' + currentEmail;
+      document.getElementById('stepRequest').style.display = 'none';
+      document.getElementById('stepOtp').style.display = 'block';
+    } catch (err) {
+      alert(err.message);
+    } finally {
+      btn.disabled = false; btn.textContent = 'Send code';
+    }
   });
 
   document.getElementById('backLink').addEventListener('click', (e) => {
@@ -105,15 +114,35 @@
     document.getElementById('stepRequest').style.display = 'block';
   });
 
-  document.getElementById('otpForm').addEventListener('submit', (e) => {
-    e.preventDefault();
-    window.location.href = 'dashboard.html';
-  });
-
-  // Auto-advance between OTP boxes
   document.querySelectorAll('.otp-boxes input').forEach((box, i, boxes) => {
     box.addEventListener('input', () => { if (box.value && boxes[i + 1]) boxes[i + 1].focus(); });
   });
+
+  document.getElementById('otpForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const code = Array.from(document.querySelectorAll('.otp-boxes input')).map(b => b.value).join('');
+    const btn = e.target.querySelector('button');
+    btn.disabled = true; btn.textContent = 'Verifying…';
+
+    try {
+      const res = await fetch(VERIFY_OTP, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: currentEmail, code }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Invalid code.');
+
+      sessionStorage.setItem('ug_email', data.email);
+      sessionStorage.setItem('ug_packs', JSON.stringify(data.packs));
+      window.location.href = 'dashboard.html';
+    } catch (err) {
+      alert(err.message);
+    } finally {
+      btn.disabled = false; btn.textContent = 'Verify & continue';
+    }
+  });
+</script>
 </script>
 <footer style="border-top: 1px solid var(--rule); padding: 24px 0; margin-top: 40px;">
   <div class="wrap" style="display:flex; gap:20px; font-size:13px; color:var(--ink-faint);">
