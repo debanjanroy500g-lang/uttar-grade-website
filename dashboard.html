@@ -111,7 +111,15 @@
   });
 
   // Credits display — placeholder until accounts are wired to the real credits table.
-  document.getElementById('creditCount').textContent = '—';
+    const email = sessionStorage.getItem('ug_email');
+  const packs = JSON.parse(sessionStorage.getItem('ug_packs') || '[]');
+
+  if (!email) {
+    window.location.href = 'login.html';
+  } else {
+    const totalCredits = packs.reduce((sum, p) => sum + p.credits_remaining, 0);
+    document.getElementById('creditCount').textContent = totalCredits;
+  }
 </script>
 <footer style="border-top: 1px solid var(--rule); padding: 24px 0; margin-top: 40px;">
   <div class="wrap" style="display:flex; gap:20px; font-size:13px; color:var(--ink-faint);">
