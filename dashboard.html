@@ -46,7 +46,7 @@
     <div class="nav-links">
       <span class="credit-pill">Credits: <span id="creditCount">—</span></span>
       <a href="index.html#pricing">Buy more</a>
-      <a href="login.html">Log out</a>
+      <a href="#" id="logoutLink">Log out</a>
     </div>
   </nav>
 </header>
@@ -96,8 +96,7 @@
     ['UPPSC', 'Uttar Pradesh'], ['BPSC', 'Bihar'], ['RPSC', 'Rajasthan'],
     ['MPPSC', 'Madhya Pradesh'], ['MPSC', 'Maharashtra'], ['UKPSC', 'Uttarakhand'],
     ['HPAS', 'Himachal Pradesh'], ['APPSC', 'Andhra Pradesh'], ['GPSC', 'Gujarat'],
-    ['TNPSC', 'Tamil Nadu'], ['KPSC', 'Karnataka'], ['Kerala PSC', 'Kerala'],
-    ['OPSC', 'Odisha'], ['PPSC', 'Punjab'], ['JPSC', 'Jharkhand'],
+    ['OPSC', 'Odisha'], ['JPSC', 'Jharkhand'],
     ['CGPSC', 'Chhattisgarh'], ['APSC', 'Assam']
   ];
   const grid = document.getElementById('stateGrid');
@@ -110,23 +109,39 @@
     grid.appendChild(a);
   });
 
-  // Credits display — placeholder until accounts are wired to the real credits table.
-    const email = sessionStorage.getItem('ug_email');
-  const packs = JSON.parse(sessionStorage.getItem('ug_packs') || '[]');
+  const CHECK_ENDPOINT = 'https://pdzhoilcfbqrimkqtcsy.supabase.co/functions/v1/check-credits';
+  const myToken = localStorage.getItem('ug_token');
 
-  if (!email) {
+  if (!myToken) {
     window.location.href = 'login.html';
   } else {
-    const totalCredits = packs.reduce((sum, p) => sum + p.credits_remaining, 0);
-    document.getElementById('creditCount').textContent = totalCredits;
+    fetch(CHECK_ENDPOINT, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ token: myToken }),
+    })
+      .then(res => res.json())
+      .then(data => {
+        document.getElementById('creditCount').textContent =
+          data.credits_remaining !== undefined ? data.credits_remaining : '—';
+      })
+      .catch(() => { document.getElementById('creditCount').textContent = '—'; });
   }
+
+  document.getElementById('logoutLink').addEventListener('click', (e) => {
+    e.preventDefault();
+    localStorage.removeItem('ug_token');
+    localStorage.removeItem('ug_credits');
+    window.location.href = 'login.html';
+  });
 </script>
+
 <footer style="border-top: 1px solid var(--rule); padding: 24px 0; margin-top: 40px;">
   <div class="wrap" style="display:flex; gap:20px; font-size:13px; color:var(--ink-faint);">
     <a href="refund-policy.html" style="color:inherit;">Refund Policy</a>
     <a href="privacy-policy.html" style="color:inherit;">Privacy Policy</a>
     <a href="terms.html" style="color:inherit;">Terms of Service</a>
   </div>
-</footer> 
+</footer>
 </body>
 </html>
