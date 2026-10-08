@@ -51,11 +51,15 @@
 
 <div class="wrap ev-grid">
   <div class="up-card">
+    <div id="loggedInBar" style="display:none; margin-bottom:20px; padding:12px 16px; background:var(--paper); border:1px solid var(--rule); display:flex; justify-content:space-between; align-items:center; font-size:14px;">
+      <span>Logged in as <strong id="loggedInToken"></strong></span>
+      <a href="#" id="switchCodeLink" style="color:var(--red-pen); font-weight:600;">Not you? Switch code</a>
+    </div>
     <form id="evalForm">
-      <div class="field">
+      <div class="field" id="tokenField">
         <label for="payToken">Access code</label>
-        <input type="text" id="payToken" required placeholder="e.g. pay_N123456789" autocomplete="off">
-        <div class="hint">This is your Razorpay Payment ID for now — full account-based credits are coming next.</div>
+        <input type="text" id="payToken" placeholder="e.g. pay_N123456789" autocomplete="off">
+        <div class="hint">This is your Razorpay Payment ID. We'll remember it on this device after your first use.</div>
       </div>
       <div class="field">
         <label for="answerFile">Answer script (PDF or image, max 10 MB)</label>
@@ -76,9 +80,32 @@
 
   const EVALUATE_ENDPOINT = 'https://pdzhoilcfbqrimkqtcsy.supabase.co/functions/v1/evaluate';
 
+  function showLoggedInState(token) {
+    document.getElementById('loggedInBar').style.display = 'flex';
+    document.getElementById('loggedInToken').textContent = '…' + token.slice(-6);
+    document.getElementById('tokenField').style.display = 'none';
+  }
+
+  function showCodeEntryState() {
+    document.getElementById('loggedInBar').style.display = 'none';
+    document.getElementById('tokenField').style.display = 'block';
+  }
+
+  const remembered = localStorage.getItem('ug_token');
+  if (remembered) showLoggedInState(remembered);
+
+  document.getElementById('switchCodeLink').addEventListener('click', (e) => {
+    e.preventDefault();
+    localStorage.removeItem('ug_token');
+    localStorage.removeItem('ug_credits');
+    showCodeEntryState();
+  });
+
   document.getElementById('evalForm').addEventListener('submit', async function (e) {
     e.preventDefault();
-    const token = document.getElementById('payToken').value.trim();
+    const remembered = localStorage.getItem('ug_token');
+    const typed = document.getElementById('payToken').value.trim();
+    const token = remembered || typed;
     const file = document.getElementById('answerFile').files[0];
     const submitBtn = document.getElementById('submitBtn');
     const loading = document.getElementById('loading');
@@ -103,6 +130,15 @@
       if (!res.ok) throw new Error(data.error || 'Evaluation failed. Please try again.');
 
       renderReport(data.result, data.credits_remaining);
+
+      // Remember this code on this device from now on.
+      if (!remembered) {
+        localStorage.setItem('ug_token', token);
+        localStorage.setItem('ug_credits', data.credits_remaining);
+        showLoggedInState(token);
+      } else {
+        localStorage.setItem('ug_credits', data.credits_remaining);
+      }
     } catch (err) {
       errorBox.style.display = 'block';
       errorBox.textContent = 'Error: ' + err.message;
@@ -143,12 +179,13 @@
     reportWrap.innerHTML = scoreHtml + cardsHtml;
   }
 </script>
+
 <footer style="border-top: 1px solid var(--rule); padding: 24px 0; margin-top: 40px;">
   <div class="wrap" style="display:flex; gap:20px; font-size:13px; color:var(--ink-faint);">
     <a href="refund-policy.html" style="color:inherit;">Refund Policy</a>
     <a href="privacy-policy.html" style="color:inherit;">Privacy Policy</a>
     <a href="terms.html" style="color:inherit;">Terms of Service</a>
   </div>
-</footer> 
+</footer>
 </body>
 </html>
