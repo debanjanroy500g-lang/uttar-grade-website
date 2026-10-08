@@ -10,18 +10,7 @@
   .auth-card { background: var(--paper-card); border: 1px solid var(--rule); border-left: 3px solid var(--red-pen); padding: 36px 32px; }
   .auth-card h1 { font-size: 24px; margin-bottom: 8px; }
   .auth-card > p { color: var(--ink-soft); font-size: 14.5px; margin-bottom: 26px; }
-  .auth-toggle { display: flex; border: 1px solid var(--ink-faint); margin-bottom: 22px; }
-  .auth-toggle button {
-    flex: 1; padding: 10px; border: none; background: transparent; font-family: 'IBM Plex Sans', sans-serif;
-    font-size: 14px; font-weight: 600; color: var(--ink-soft); cursor: pointer;
-  }
-  .auth-toggle button.active { background: var(--ink); color: var(--paper); }
-  .otp-boxes { display: flex; gap: 10px; margin-bottom: 20px; }
-  .otp-boxes input {
-    width: 44px; height: 52px; text-align: center; font-size: 20px;
-    border: 1px solid var(--ink-faint); font-family: 'IBM Plex Sans', sans-serif;
-  }
-  .back-link { font-size: 13.5px; color: var(--ink-soft); text-decoration: none; display: inline-block; margin-top: 14px; }
+  #errorMsg { display:none; color: var(--red-pen); font-weight:600; font-size: 13.5px; margin-top: 10px; }
 </style>
 </head>
 <body>
@@ -42,114 +31,62 @@
 
 <div class="auth-wrap">
   <div class="auth-card">
-    <div id="stepRequest">
-      <h1>Log in</h1>
-      <p>We'll send a one-time code to verify it's you.</p>
-      <div class="auth-toggle">
-        <button id="tabEmail" class="active" type="button">Email</button>
-        <button id="tabPhone" type="button">Phone</button>
+    <h1>Log in</h1>
+    <p>Enter the Access Code from your Razorpay payment. We'll remember it on this device, so you won't need to enter it again.</p>
+    <form id="loginForm">
+      <div class="field">
+        <label for="token">Access Code</label>
+        <input type="text" id="token" required placeholder="e.g. pay_N123456789" autocomplete="off">
+        <div class="hint">Find it on the Razorpay success screen or in your payment receipt.</div>
       </div>
-      <form id="requestForm">
-        <div class="field">
-          <label for="identifier" id="identifierLabel">Email address</label>
-          <input type="text" id="identifier" required placeholder="you@example.com" autocomplete="off">
-        </div>
-        <button type="submit" class="btn btn-primary" style="width:100%;">Send code</button>
-      </form>
-    </div>
-
-    <div id="stepOtp" style="display:none;">
-      <h1>Enter the code</h1>
-      <p id="otpSentTo">Sent to your email/phone.</p>
-      <form id="otpForm">
-                <div class="otp-boxes">
-          <input type="text" maxlength="1" inputmode="numeric">
-          <input type="text" maxlength="1" inputmode="numeric">
-          <input type="text" maxlength="1" inputmode="numeric">
-          <input type="text" maxlength="1" inputmode="numeric">
-          <input type="text" maxlength="1" inputmode="numeric">
-          <input type="text" maxlength="1" inputmode="numeric">
-        </div>
-        <button type="submit" class="btn btn-primary" style="width:100%;">Verify &amp; continue</button>
-      </form>
-      <a href="#" class="back-link" id="backLink">← Use a different email or phone</a>
-    </div>
+      <button type="submit" id="submitBtn" class="btn btn-primary" style="width:100%;">Log in</button>
+      <div id="errorMsg"></div>
+    </form>
   </div>
 </div>
 
 <script>
-  const SEND_OTP = 'https://pdzhoilcfbqrimkqtcsy.supabase.co/functions/v1/send-otp';
-  const VERIFY_OTP = 'https://pdzhoilcfbqrimkqtcsy.supabase.co/functions/v1/verify-otp';
+  const CHECK_ENDPOINT = 'https://pdzhoilcfbqrimkqtcsy.supabase.co/functions/v1/check-credits';
 
-  const input = document.getElementById('identifier');
-  let currentEmail = '';
+  if (localStorage.getItem('ug_token')) {
+    window.location.href = 'dashboard.html';
+  }
 
-  document.getElementById('requestForm').addEventListener('submit', async (e) => {
+  document.getElementById('loginForm').addEventListener('submit', async (e) => {
     e.preventDefault();
-    currentEmail = input.value.trim();
-    const btn = e.target.querySelector('button');
-    btn.disabled = true; btn.textContent = 'Sending…';
+    const token = document.getElementById('token').value.trim();
+    const btn = document.getElementById('submitBtn');
+    const errorMsg = document.getElementById('errorMsg');
+    errorMsg.style.display = 'none';
+    btn.disabled = true; btn.textContent = 'Checking…';
 
     try {
-      const res = await fetch(SEND_OTP, {
+      const res = await fetch(CHECK_ENDPOINT, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email: currentEmail }),
+        body: JSON.stringify({ token }),
       });
       const data = await res.json();
-      if (!res.ok) throw new Error(data.error || 'Could not send code.');
+      if (!res.ok) throw new Error(data.error || 'That code could not be verified.');
 
-      document.getElementById('otpSentTo').textContent = 'Sent to ' + currentEmail;
-      document.getElementById('stepRequest').style.display = 'none';
-      document.getElementById('stepOtp').style.display = 'block';
-    } catch (err) {
-      alert(err.message);
-    } finally {
-      btn.disabled = false; btn.textContent = 'Send code';
-    }
-  });
-
-  document.getElementById('backLink').addEventListener('click', (e) => {
-    e.preventDefault();
-    document.getElementById('stepOtp').style.display = 'none';
-    document.getElementById('stepRequest').style.display = 'block';
-  });
-
-  document.querySelectorAll('.otp-boxes input').forEach((box, i, boxes) => {
-    box.addEventListener('input', () => { if (box.value && boxes[i + 1]) boxes[i + 1].focus(); });
-  });
-
-  document.getElementById('otpForm').addEventListener('submit', async (e) => {
-    e.preventDefault();
-    const code = Array.from(document.querySelectorAll('.otp-boxes input')).map(b => b.value).join('');
-    const btn = e.target.querySelector('button');
-    btn.disabled = true; btn.textContent = 'Verifying…';
-
-    try {
-      const res = await fetch(VERIFY_OTP, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email: currentEmail, code }),
-      });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error || 'Invalid code.');
-
-      sessionStorage.setItem('ug_email', data.email);
-      sessionStorage.setItem('ug_packs', JSON.stringify(data.packs));
+      localStorage.setItem('ug_token', data.token);
+      localStorage.setItem('ug_credits', data.credits_remaining);
       window.location.href = 'dashboard.html';
     } catch (err) {
-      alert(err.message);
+      errorMsg.textContent = err.message;
+      errorMsg.style.display = 'block';
     } finally {
-      btn.disabled = false; btn.textContent = 'Verify & continue';
+      btn.disabled = false; btn.textContent = 'Log in';
     }
   });
 </script>
+
 <footer style="border-top: 1px solid var(--rule); padding: 24px 0; margin-top: 40px;">
   <div class="wrap" style="display:flex; gap:20px; font-size:13px; color:var(--ink-faint);">
     <a href="refund-policy.html" style="color:inherit;">Refund Policy</a>
     <a href="privacy-policy.html" style="color:inherit;">Privacy Policy</a>
     <a href="terms.html" style="color:inherit;">Terms of Service</a>
   </div>
-</footer> 
+</footer>
 </body>
 </html>
