@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Log in — Uttar Grade</title>
+<link rel="stylesheet" href="style.css">
+<style>
+  .auth-wrap { max-width: 420px; margin: 0 auto; padding: 90px 24px 60px; }
+  .auth-card { background: var(--paper-card); border: 1px solid var(--rule); border-left: 3px solid var(--red-pen); padding: 36px 32px; }
+  .auth-card h1 { font-size: 24px; margin-bottom: 8px; }
+  .auth-card > p { color: var(--ink-soft); font-size: 14.5px; margin-bottom: 26px; }
+  #errorMsg { display:none; color: var(--red-pen); font-weight:600; font-size: 13.5px; margin-top: 10px; }
+</style>
+</head>
+<body>
+
+<header>
+  <nav class="nav">
+    <a href="index.html" class="brand">
+      <svg class="brand-mark" viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg">
+        <rect x="1" y="1" width="38" height="38" fill="none" stroke="var(--ink)" stroke-width="1.5"/>
+        <rect x="6" y="6" width="28" height="28" fill="var(--ink)"/>
+        <text x="20" y="25" text-anchor="middle" font-family="Fraunces, serif" font-size="15" font-weight="600" fill="var(--paper)">UG</text>
+        <line x1="12" y1="30.5" x2="28" y2="30.5" stroke="var(--red-pen)" stroke-width="2.4" stroke-linecap="round"/>
+      </svg>
+      <span class="brand-name">Uttar <em>Grade</em></span>
+    </a>
+  </nav>
+</header>
+
+<div class="auth-wrap">
+  <div class="auth-card">
+    <h1>Log in</h1>
+    <p>Enter the Access Code from your Razorpay payment. We'll remember it on this device, so you won't need to enter it again.</p>
+    <form id="loginForm">
+      <div class="field">
+        <label for="token">Access Code</label>
+        <input type="text" id="token" required placeholder="e.g. pay_N123456789" autocomplete="off">
+        <div class="hint">Find it on the Razorpay success screen or in your payment receipt.</div>
+      </div>
+      <button type="submit" id="submitBtn" class="btn btn-primary" style="width:100%;">Log in</button>
+      <div id="errorMsg"></div>
+    </form>
+  </div>
+</div>
+
+<script>
+  const CHECK_ENDPOINT = 'https://pdzhoilcfbqrimkqtcsy.supabase.co/functions/v1/check-credits';
+
+  if (localStorage.getItem('ug_token')) {
+    window.location.href = 'dashboard.html';
+  }
+
+  document.getElementById('loginForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const token = document.getElementById('token').value.trim();
+    const btn = document.getElementById('submitBtn');
+    const errorMsg = document.getElementById('errorMsg');
+    errorMsg.style.display = 'none';
+    btn.disabled = true; btn.textContent = 'Checking…';
+
+    try {
+      const res = await fetch(CHECK_ENDPOINT, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ token }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'That code could not be verified.');
+
+      localStorage.setItem('ug_token', data.token);
+      localStorage.setItem('ug_credits', data.credits_remaining);
+      window.location.href = 'dashboard.html';
+    } catch (err) {
+      errorMsg.textContent = err.message;
+      errorMsg.style.display = 'block';
+    } finally {
+      btn.disabled = false; btn.textContent = 'Log in';
+    }
+  });
+</script>
+
+<footer style="border-top: 1px solid var(--rule); padding: 24px 0; margin-top: 40px;">
+  <div class="wrap" style="display:flex; gap:20px; font-size:13px; color:var(--ink-faint);">
+    <a href="refund-policy.html" style="color:inherit;">Refund Policy</a>
+    <a href="privacy-policy.html" style="color:inherit;">Privacy Policy</a>
+    <a href="terms.html" style="color:inherit;">Terms of Service</a>
+    <a href="mailto:uttargrade.support@gmail.com" style="color:inherit;">uttargrade.support@gmail.com</a>
+  </div>
+</footer>
+</body>
+</html>
