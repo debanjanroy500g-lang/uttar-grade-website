@@ -64,8 +64,15 @@
       <div class="field">
         <label for="answerFile">Answer script (PDF or image, max 10 MB)</label>
         <input type="file" id="answerFile" accept=".pdf,image/*" required>
+        <div class="hint">Please keep your name, roll number and phone number off the page.</div>
       </div>
-      <button type="submit" id="submitBtn" class="btn btn-primary" style="width:100%;">Evaluate my answer</button>
+      <div style="margin:4px 0 18px; padding:14px 16px; border:1px solid var(--rule); background:var(--paper);">
+        <label style="display:flex; gap:12px; align-items:flex-start; font-size:13.5px; line-height:1.6; color:var(--ink-soft); cursor:pointer;">
+          <input type="checkbox" id="consent" style="margin-top:4px; flex:none;">
+          <span>I agree that the answer I upload will be processed by AI services (Google Gemini and Anthropic Claude) to create my evaluation. Google's free Gemini service may use uploaded content to improve its products, and Google's reviewers may read it. I have not written my name, roll number, phone number or other personal details on the pages I am uploading. I have read the <a href="privacy-policy.html" target="_blank" rel="noopener">Privacy Policy</a> and <a href="terms.html" target="_blank" rel="noopener">Terms of Service</a>, and I understand this is AI practice feedback, not an official examiner's mark. I can withdraw this consent at any time by emailing uttargrade.support@gmail.com.</span>
+        </label>
+      </div>
+      <button type="submit" id="submitBtn" class="btn btn-primary" style="width:100%;" disabled>Evaluate my answer</button>
     </form>
     <div id="loading">Evaluating your script — usually takes 30–60 seconds…</div>
     <div id="errorBox"></div>
@@ -79,6 +86,13 @@
   document.getElementById('examTag').textContent = params.get('exam') ? params.get('exam').toUpperCase() : 'General';
 
   const EVALUATE_ENDPOINT = 'https://pdzhoilcfbqrimkqtcsy.supabase.co/functions/v1/evaluate';
+  const CONSENT_VERSION = '2026-10-v1';   // must match the version in the evaluate function
+
+  const consentBox = document.getElementById('consent');
+  consentBox.addEventListener('change', function () {
+    document.getElementById('submitBtn').disabled = !this.checked;
+  });
+  document.getElementById('submitBtn').disabled = !consentBox.checked;
 
   function showLoggedInState(token) {
     document.getElementById('loggedInBar').style.display = 'flex';
@@ -113,6 +127,11 @@
     const reportWrap = document.getElementById('reportWrap');
 
     if (!file || !token) return;
+    if (!consentBox.checked) {
+      errorBox.style.display = 'block';
+      errorBox.textContent = 'Please tick the consent box to continue.';
+      return;
+    }
 
     submitBtn.disabled = true;
     loading.style.display = 'block';
@@ -125,6 +144,8 @@
       formData.append('token', token);
       formData.append('file', file);
       formData.append('exam', params.get('exam') || '');
+      formData.append('consent', 'yes');
+      formData.append('consent_version', CONSENT_VERSION);
 
       const res = await fetch(EVALUATE_ENDPOINT, { method: 'POST', body: formData });
       const data = await res.json();
@@ -144,7 +165,7 @@
       errorBox.style.display = 'block';
       errorBox.textContent = 'Error: ' + err.message;
     } finally {
-      submitBtn.disabled = false;
+      submitBtn.disabled = !consentBox.checked;
       loading.style.display = 'none';
     }
   });
